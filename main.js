@@ -302,6 +302,64 @@ class Tree {
         return temporalNode;
     }
 
+    //Finds a value in the tree
+    find(value, node = this.#root) {
+        //If the value is found return the node
+        if(value === node.getValue) {
+            return node;
+        //If the value is smaller, and if the left is not null
+        } else if (value < node.getValue && node.getLeft !== null) {
+            //Recursive call to the left node
+            return this.find(value, node.getLeft);
+        //If the value is bigger, and the right is not null
+        } else if (node.getRight !== null){
+            //Recursive call to the right node
+            return this.find(value, node.getRight);
+        } else {
+            return "No value was found";
+        }
+    }
+
+    //Callback function for level order
+    callBackFunction(node) {
+        //Log the value of the node
+        console.log(node.getValue);
+    }
+
+    //Function that gives the level order of the tree
+    levelOrderForEach(callback) {
+        //Check if the callback is a function
+        if(typeof(callback) !== "function") {
+            throw new Error("You need to pass a function");
+        }
+        //Create an array that will function like a queue
+        let theQueue = [];
+        //Start at the root
+        let temporalNode = this.#root;
+        //Push the node in the array
+        theQueue.push(temporalNode);
+        //While loop that stops when the array is empty
+        while (theQueue.length !== 0) {
+            //Get the front element of the array
+            let theFront = theQueue.splice(0,1);
+            //Call the callback function
+            this.callBackFunction(theFront[0]);
+            //Temporal function is the value of the front of the list
+            temporalNode = theFront[0];
+            //If there is a node in the left
+            if(temporalNode.getLeft != null) {
+                //Push the left child in the array
+                theQueue.push(temporalNode.getLeft);
+            }
+            //If there is a node in the right
+            if(temporalNode.getRight != null) {
+                //Push the right child in the array
+                theQueue.push(temporalNode.getRight);
+            }
+        }
+        return;
+    }
+
 }
 
 const prettyPrint = (node, prefix = '', isLeft = true) => {
@@ -339,3 +397,6 @@ console.log(example.delete(9));
 prettyPrint(example.getRoot);
 console.log(example.delete(8));
 prettyPrint(example.getRoot);
+console.log(example.find(5));
+console.log(example.find(7));
+console.log(example.levelOrderForEach(example.callBackFunction));
