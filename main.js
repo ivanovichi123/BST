@@ -316,7 +316,7 @@ class Tree {
             //Recursive call to the right node
             return this.find(value, node.getRight);
         } else {
-            return "No value was found";
+            return null;
         }
     }
 
@@ -343,7 +343,7 @@ class Tree {
             //Get the front element of the array
             let theFront = theQueue.splice(0,1);
             //Call the callback function
-            this.callBackFunction(theFront[0]);
+            callback(theFront[0]);
             //Temporal function is the value of the front of the list
             temporalNode = theFront[0];
             //If there is a node in the left
@@ -359,6 +359,133 @@ class Tree {
         }
         return;
     }
+
+    //Function that shows all the nodes values in the inOrder process
+    inOrderForEach(callback, node = this.#root) {
+        //If the callback is not  function throw an error
+        if(typeof(callback) !== "function") {
+            throw new Error("You need to pass a function");
+        }
+        //If the node is null return
+        if(node === null) {
+            return;
+        }
+        //Call the callback function to console log the value
+        callback(node);
+        //Go to the left node
+        this.inOrderForEach(callback, node.getLeft);
+        //Go to the right node
+        this.inOrderForEach(callback, node.getRight);
+    }
+
+    //Function that shows all the nodes values in the preOrder process
+    preOrderForEach(callback, node = this.#root) {
+        //If the callback is not  function throw an error
+        if(typeof(callback) !== "function") {
+            throw new Error("You need to pass a function");
+        }
+        //If the node is null return
+        if(node === null) {
+            return;
+        }
+        //Go to the left node
+        this.preOrderForEach(callback, node.getLeft);
+        //Call the callback function to console log the value
+        callback(node);
+        //Go to the right node
+        this.preOrderForEach(callback, node.getRight);
+    }
+
+    //Function that shows all the nodes values in the postOrder process
+    postOrderForEach(callback, node = this.#root) {
+        //If the callback is not  function throw an error
+        if(typeof(callback) !== "function") {
+            throw new Error("You need to pass a function");
+        }
+        //If the node is null return
+        if(node === null) {
+            return;
+        }
+        //Go to the left node
+        this.postOrderForEach(callback, node.getLeft);
+        //Go to the right node
+        this.postOrderForEach(callback, node.getRight);
+        //Call the callback function to console log the value
+        callback(node);
+    }
+
+    //Functions that gives the height of the node, height is the longest path from the node to a leaf
+    height(value) {
+        //Array to store the values of the size of the paths to the leaf
+        let theArray = [];
+        //Counter to store the value of the size of the path
+        let theCounter = 0;
+        //Find the node in the tree
+        let findNode = this.find(value);
+        //If the node is not found return null
+        if(findNode === null) {
+            return null;
+        }
+        //Auxiliary function that returns an array with the sizes of the paths to the nodes
+        this.findHeight(findNode, theArray, theCounter);  
+        //Variable that checks the current value in the array
+        let current = 0;
+        //Variable that stores the biggest number
+        let max = 0;  
+        //For loop that goes through every number in the array 
+        for(let i = 0; i < theArray.length; i++) {
+            //Store the current value
+            current  = theArray[i];
+            //Check if the current number is biggest than the max variable
+            if(current > max) {
+                max = current
+            }
+        }
+        //Return the biggest number
+        return max;
+    }
+
+    //Functions that gets the length of the paths to the leafs of the current node
+    findHeight(node, array, count) {
+        //If the nod is null return
+        if(node === null) {
+            return;
+        }
+        //Recursive call to the left increasing the counter
+        this.findHeight(node.getLeft, array, count + 1);
+        //Push the value of the counter in the array
+        array.push(count);
+        //Recursive call to the right increasing the counter
+        this.findHeight(node.getRight, array, count + 1); 
+    }
+
+    //Function that gives the depth of the node with the value in the tree
+    depth(value, node = this.#root, count = 0) {
+        //If the value is equal to the value in the node
+        if(value === node.getValue) {
+            return count;
+        }
+        //If the value is smaller than the node and the left node is not null
+        if(value < node.getValue && node.getLeft !== null) {
+            //Increase the counter of the depth
+            count += 1;
+            //Recursive call to the left node
+            return this.depth(value, node.getLeft, count);
+        //If the value is bigger than the node and the right node is not null
+        } else if (value > node.getValue && node.getRight !== null) {
+            //Increase the counter of the depth
+            count += 1;
+            //Recursive call to the right node
+            return this.depth(value, node.getRight, count);
+        //If the value is not found return null
+        } else {
+            return null
+        }
+    }
+
+
+
+    
 
 }
 
@@ -400,3 +527,8 @@ prettyPrint(example.getRoot);
 console.log(example.find(5));
 console.log(example.find(7));
 console.log(example.levelOrderForEach(example.callBackFunction));
+console.log(example.inOrderForEach(example.callBackFunction));
+console.log(example.preOrderForEach(example.callBackFunction));
+console.log(example.postOrderForEach(example.callBackFunction));
+console.log(example.height(324));
+console.log(example.depth(324));
