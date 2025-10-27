@@ -361,24 +361,6 @@ class Tree {
     }
 
     //Function that shows all the nodes values in the inOrder process
-    inOrderForEach(callback, node = this.#root) {
-        //If the callback is not  function throw an error
-        if(typeof(callback) !== "function") {
-            throw new Error("You need to pass a function");
-        }
-        //If the node is null return
-        if(node === null) {
-            return;
-        }
-        //Call the callback function to console log the value
-        callback(node);
-        //Go to the left node
-        this.inOrderForEach(callback, node.getLeft);
-        //Go to the right node
-        this.inOrderForEach(callback, node.getRight);
-    }
-
-    //Function that shows all the nodes values in the preOrder process
     preOrderForEach(callback, node = this.#root) {
         //If the callback is not  function throw an error
         if(typeof(callback) !== "function") {
@@ -388,12 +370,30 @@ class Tree {
         if(node === null) {
             return;
         }
+        //Call the callback function to console log the value
+        callback(node);
         //Go to the left node
         this.preOrderForEach(callback, node.getLeft);
+        //Go to the right node
+        this.preOrderForEach(callback, node.getRight);
+    }
+
+    //Function that shows all the nodes values in the preOrder process
+    inOrderForEach(callback, node = this.#root) {
+        //If the callback is not  function throw an error
+        if(typeof(callback) !== "function") {
+            throw new Error("You need to pass a function");
+        }
+        //If the node is null return
+        if(node === null) {
+            return;
+        }
+        //Go to the left node
+        this.inOrderForEach(callback, node.getLeft);
         //Call the callback function to console log the value
         callback(node);
         //Go to the right node
-        this.preOrderForEach(callback, node.getRight);
+        this.inOrderForEach(callback, node.getRight);
     }
 
     //Function that shows all the nodes values in the postOrder process
@@ -483,8 +483,60 @@ class Tree {
         }
     }
 
+    //Check if the tree is balanced
+    isBalanced(node = this.#root, array = []) {
+        //Variables to store the values of the left, right and the value of the balance
+        let leftValue = 0;
+        let rightValue = 0;
+        let balanceValue = 0;
+        //If the node is null return
+        if(node === null) {
+            return;
+        }
+        //If the node in the left is not null
+        if (node.getLeft !== null) {
+            //Get the height of the left node and add 1 
+            leftValue = this.height(node.getLeft.getValue) + 1;
+        }
+        //If the node in the right is not null
+        if(node.getRight !== null) {
+            //Get the height of the right node and add 1
+            rightValue = this.height(node.getRight.getValue) + 1;
+        }
+        //Get the value of the balance
+        balanceValue = rightValue - leftValue;
+        //Push the value in the array
+        array.push(balanceValue);
+        //Recursive call to the left
+        this.isBalanced(node.getLeft, array);
+        //Recursive call to the right
+        this.isBalanced(node.getRight, array);
+        //For loop to check if there is a value of 2 or bigger 
+        for(let i = 0; i < array.length; i++) {
+            if(array[i] >= 2 || array[i] <= -2) {
+                //There is an imbalanced
+                return false
+            }
+        }
+        //The tree is balanced
+        return true;
+    }
 
-
+    //Functions that rebalance the tree
+    rebalance(node = this.#root, theArray = []) {
+        //If the node is null return
+        if(node === null) {
+            return;
+        }
+        //Go to the left node
+        this.rebalance(node.getLeft, theArray);
+        //Put the value in the array
+        theArray.push(node.getValue);
+        //Go to the right node
+        this.rebalance(node.getRight, theArray);
+        //With the new array create a new tree
+        this.buildTree(theArray);
+    }
     
 
 }
@@ -503,32 +555,67 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
 };
 
 
-let example = new Tree();
-example.buildTree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
-console.log(example.insert(2));
-console.log(example.insert(6));
-console.log(example.insert(32));
-console.log(example.insert(2));
-prettyPrint(example.getRoot);
-console.log(example.delete(2));
-prettyPrint(example.getRoot);
-console.log(example.delete(1));
-prettyPrint(example.getRoot);
-console.log(example.delete(7));
-prettyPrint(example.getRoot);
-console.log(example.delete(67));
-prettyPrint(example.getRoot);
-console.log(example.delete(32));
-prettyPrint(example.getRoot);
-console.log(example.delete(9));
-prettyPrint(example.getRoot);
-console.log(example.delete(8));
-prettyPrint(example.getRoot);
-console.log(example.find(5));
-console.log(example.find(7));
-console.log(example.levelOrderForEach(example.callBackFunction));
-console.log(example.inOrderForEach(example.callBackFunction));
-console.log(example.preOrderForEach(example.callBackFunction));
-console.log(example.postOrderForEach(example.callBackFunction));
-console.log(example.height(324));
-console.log(example.depth(324));
+// let example = new Tree();
+// example.buildTree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
+// prettyPrint(example.getRoot);
+// console.log(example.insert(2));
+// console.log(example.insert(6));
+// console.log(example.insert(32));
+// console.log(example.insert(2));
+// prettyPrint(example.getRoot);
+// console.log(example.delete(2));
+// prettyPrint(example.getRoot);
+// console.log(example.delete(1));
+// prettyPrint(example.getRoot);
+// console.log(example.delete(7));
+// prettyPrint(example.getRoot);
+// console.log(example.delete(67));
+// prettyPrint(example.getRoot);
+// console.log(example.delete(32));
+// prettyPrint(example.getRoot);
+// console.log(example.delete(9));
+// prettyPrint(example.getRoot);
+// console.log(example.delete(8));
+// prettyPrint(example.getRoot);
+// console.log(example.find(5));
+// console.log(example.find(7));
+// console.log(example.levelOrderForEach(example.callBackFunction));
+// console.log(example.inOrderForEach(example.callBackFunction));
+// console.log(example.preOrderForEach(example.callBackFunction));
+// console.log(example.postOrderForEach(example.callBackFunction));
+// console.log(example.height(324));
+// console.log(example.depth(324));
+// console.log(example.isBalanced());
+// console.log(example.rebalance());
+// prettyPrint(example.getRoot);
+// console.log(example.isBalanced());
+
+let example2 = new Tree();
+example2.buildTree([72, 5, 94, 18, 63, 27, 84, 42, 9, 56, 11, 31, 70, 67, 45, 88, 33, 97, 23, 6, 50, 16, 92, 41, 78, 2, 35, 60, 81, 26]
+);
+console.log(example2.isBalanced());
+prettyPrint(example2.getRoot);
+console.log("preOrder");
+example2.preOrderForEach(example2.callBackFunction);
+console.log("inOrder");
+example2.inOrderForEach(example2.callBackFunction);
+console.log("postOrder");
+example2.postOrderForEach(example2.callBackFunction);
+console.log("levelOrder");
+example2.levelOrderForEach(example2.callBackFunction);
+example2.insert(1);
+example2.insert(3);
+example2.insert(45);
+example2.insert(56);
+example2.insert(4);
+console.log(example2.isBalanced());
+example2.rebalance();
+console.log(example2.isBalanced());
+console.log("preOrder");
+example2.preOrderForEach(example2.callBackFunction);
+console.log("inOrder");
+example2.inOrderForEach(example2.callBackFunction);
+console.log("postOrder");
+example2.postOrderForEach(example2.callBackFunction);
+console.log("levelOrder");
+example2.levelOrderForEach(example2.callBackFunction);
